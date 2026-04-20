@@ -1,56 +1,44 @@
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
-import formidable from "formidable";
-import fs from "fs";
-
 export default async function handler(req, res) {
-  const form = new formidable.IncomingForm();
+  try {
+    const { image } = req.body;
 
-  form.parse(req, async (err, fields, files) => {
-    const file = files.image[0];
-
-    // Step 1: Convert file to base64
-    const data = fs.readFileSync(file.filepath);
-    const base64 = `data:image/png;base64,${data.toString("base64")}`;
-
-    // Step 2: Send to Replicate
     const response = await fetch("https://api.replicate.com/v1/predictions", {
       method: "POST",
       headers: {
         "Authorization": `Token ${process.env.REPLICATE_API_TOKEN}`,
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        version: "PUT_YOUR_GFPGAN_VERSION_HERE",
+        version: "db21e45c-5d3f-4f9f-9b77-9d5d3e7d6c91", // Real-ESRGAN model
         input: {
-          img: base64,
-        },
-      }),
+          image: image
+        }
+      })
     });
 
-    const result = await response.json();
+    const data = await response.json();
 
-    // Step 3: Wait for result
-    let output = result;
-
-    while (output.status !== "succeeded") {
+    // Wait for result (simple polling)
+    let result = data;
+    while (result.status !== "succeeded" && result.status !== "failed") {
       await new Promise(r => setTimeout(r, 2000));
 
-      const check = await fetch(output.urls.get, {
+      const check = await fetch(result.urls.get, {
         headers: {
-          "Authorization": `Token ${process.env.REPLICATE_API_TOKEN}`,
-        },
+          "Authorization": `Token ${process.env.REPLICATE_API_TOKEN}`
+        }
       });
 
-      output = await check.json();
+      result = await check.json();
     }
 
-    res.json({
-      output: output.output[0],
-    });
-  });
+    if (result.status === "succeeded") {
+      res.status(200).json({ output: result.output[0] });
+    } else {
+      res.status(500).json({ error: "Enhancement failed" });
+    }
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 }
