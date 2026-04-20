@@ -23,29 +23,29 @@ export default async function handler(req, res) {
 
     const imageUrl = uploadData.data.url;
 
-    // 2. Send to Replicate (FIXED VERSION)
-    const response = await fetch("https://api.replicate.com/v1/predictions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Token ${process.env.REPLICATE_API_TOKEN}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        version: "928360d7b3a0b5a0e64d5c7e7a87e0b0b8f58bd2d96ff475c933c7781b78b810",
-        input: {
-          image: imageUrl
-        }
-      })
-    });
+    // 2. Send to Replicate (NEW WORKING METHOD)
+    const start = await fetch(
+      "https://api.replicate.com/v1/models/nightmareai/real-esrgan/predictions",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Token ${process.env.REPLICATE_API_TOKEN}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          input: {
+            image: imageUrl,
+            scale: 2,
+            face_enhance: false
+          }
+        })
+      }
+    );
 
-    const data = await response.json();
+    const startData = await start.json();
 
-    // 🔴 IMPORTANT FIX (tumhara error yahi tha)
-    if (!data.urls || !data.urls.get) {
-      return res.status(500).json({
-        error: "Replicate API failed",
-        details: data
-      });
+    if (!startData.urls || !startData.urls.get) {
+      return res.status(500).json({ error: startData });
     }
 
     // 3. Polling
@@ -53,7 +53,7 @@ export default async function handler(req, res) {
     while (true) {
       await new Promise(r => setTimeout(r, 2000));
 
-      const check = await fetch(data.urls.get, {
+      const check = await fetch(startData.urls.get, {
         headers: {
           "Authorization": `Token ${process.env.REPLICATE_API_TOKEN}`
         }
