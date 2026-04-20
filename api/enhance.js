@@ -28,9 +28,9 @@ export default async function handler(req, res) {
     const imageUrl = uploadData.data.url;
     console.log("IMAGE URL:", imageUrl);
 
-    // 2. Send to Replicate (CORRECT METHOD)
+    // 2. Send to Replicate (✅ CORRECT WAY - NO VERSION HASH)
     const start = await fetch(
-      "https://api.replicate.com/v1/predictions",
+      "https://api.replicate.com/v1/models/tencentarc/gfpgan/predictions",
       {
         method: "POST",
         headers: {
@@ -38,7 +38,6 @@ export default async function handler(req, res) {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          version: "928360d7b3a0b5a0e64d5c7e7a87e0b0b8f58bd2d96ff475c933c7781b78b810",
           input: {
             img: imageUrl,
             scale: 2,
