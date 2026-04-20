@@ -30,8 +30,8 @@ async function enhance() {
     if (data.output) {
       afterImg.src = data.output;
     } else {
-      alert("Error");
-      console.log(data);
+     alert(JSON.stringify(data));
+console.log("FULL ERROR:", data);
     }
   };
 }
