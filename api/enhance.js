@@ -2,6 +2,10 @@ export default async function handler(req, res) {
   try {
     const { image } = req.body;
 
+    if (!image) {
+      return res.status(400).json({ error: "No image received" });
+    }
+
     // 1. Upload to ImgBB
     const base64Data = image.split(",")[1];
 
@@ -22,10 +26,11 @@ export default async function handler(req, res) {
     }
 
     const imageUrl = uploadData.data.url;
+    console.log("IMAGE URL:", imageUrl);
 
-    // 2. Send to Replicate (NEW WORKING METHOD)
+    // 2. Send to Replicate (GFPGAN)
     const start = await fetch(
-      "https://api.replicate.com/v1/models/nightmareai/real-esrgan/predictions",
+      "https://api.replicate.com/v1/models/tencentarc/gfpgan/predictions",
       {
         method: "POST",
         headers: {
@@ -34,9 +39,9 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           input: {
-            image: imageUrl,
+            img: imageUrl,
             scale: 2,
-            face_enhance: false
+            version: "v1.4"
           }
         })
       }
@@ -44,12 +49,15 @@ export default async function handler(req, res) {
 
     const startData = await start.json();
 
+    console.log("REPLICATE START:", startData);
+
     if (!startData.urls || !startData.urls.get) {
       return res.status(500).json({ error: startData });
     }
 
     // 3. Polling
     let result;
+
     while (true) {
       await new Promise(r => setTimeout(r, 2000));
 
@@ -61,6 +69,8 @@ export default async function handler(req, res) {
 
       result = await check.json();
 
+      console.log("STATUS:", result.status);
+
       if (result.status === "succeeded") break;
 
       if (result.status === "failed") {
@@ -68,7 +78,7 @@ export default async function handler(req, res) {
       }
     }
 
-    res.status(200).json({ output: result.output[0] });
+    res.status(200).json({ output: result.output });
 
   } catch (err) {
     res.status(500).json({ error: err.message });
