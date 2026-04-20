@@ -6,16 +6,14 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "No image received" });
     }
 
-    // 1. Upload to ImgBB
+    // ImgBB upload
     const base64Data = image.split(",")[1];
 
     const uploadRes = await fetch(
       `https://api.imgbb.com/1/upload?key=${process.env.IMGBB_API_KEY}`,
       {
         method: "POST",
-        body: new URLSearchParams({
-          image: base64Data
-        })
+        body: new URLSearchParams({ image: base64Data })
       }
     );
 
@@ -26,11 +24,10 @@ export default async function handler(req, res) {
     }
 
     const imageUrl = uploadData.data.url;
-    console.log("IMAGE URL:", imageUrl);
 
-    // 🔥 2. Send to Replicate (FINAL FIXED MODEL)
+    // ✅ GFPGAN सही API call
     const start = await fetch(
-      "https://api.replicate.com/v1/models/nightmareai/real-esrgan/predictions",
+      "https://api.replicate.com/v1/models/tencentarc/gfpgan/predictions",
       {
         method: "POST",
         headers: {
@@ -39,22 +36,21 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           input: {
-            image: imageUrl,
+            img: imageUrl,
             scale: 2,
-            face_enhance: true
+            version: "v1.4"
           }
         })
       }
     );
 
     const startData = await start.json();
-    console.log("REPLICATE START:", startData);
+    console.log(startData);
 
-    if (!startData.urls || !startData.urls.get) {
+    if (!startData.urls?.get) {
       return res.status(500).json({ error: startData });
     }
 
-    // 3. Polling
     let result;
 
     while (true) {
@@ -67,16 +63,13 @@ export default async function handler(req, res) {
       });
 
       result = await check.json();
-      console.log("STATUS:", result.status);
 
       if (result.status === "succeeded") break;
-
       if (result.status === "failed") {
         return res.status(500).json({ error: result });
       }
     }
 
-    // 4. Return output
     res.status(200).json({
       output: Array.isArray(result.output)
         ? result.output[0]
