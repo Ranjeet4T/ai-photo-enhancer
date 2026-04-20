@@ -28,9 +28,9 @@ export default async function handler(req, res) {
     const imageUrl = uploadData.data.url;
     console.log("IMAGE URL:", imageUrl);
 
-    // 2. Send to Replicate (GFPGAN)
+    // 2. Send to Replicate (CORRECT METHOD)
     const start = await fetch(
-      "https://api.replicate.com/v1/models/tencentarc/gfpgan/predictions",
+      "https://api.replicate.com/v1/predictions",
       {
         method: "POST",
         headers: {
@@ -38,6 +38,7 @@ export default async function handler(req, res) {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
+          version: "928360d7b3a0b5a0e64d5c7e7a87e0b0b8f58bd2d96ff475c933c7781b78b810",
           input: {
             img: imageUrl,
             scale: 2,
@@ -48,7 +49,6 @@ export default async function handler(req, res) {
     );
 
     const startData = await start.json();
-
     console.log("REPLICATE START:", startData);
 
     if (!startData.urls || !startData.urls.get) {
@@ -68,7 +68,6 @@ export default async function handler(req, res) {
       });
 
       result = await check.json();
-
       console.log("STATUS:", result.status);
 
       if (result.status === "succeeded") break;
@@ -78,7 +77,12 @@ export default async function handler(req, res) {
       }
     }
 
-    res.status(200).json({ output: result.output });
+    // 4. Return output
+    res.status(200).json({
+      output: Array.isArray(result.output)
+        ? result.output[0]
+        : result.output
+    });
 
   } catch (err) {
     res.status(500).json({ error: err.message });
