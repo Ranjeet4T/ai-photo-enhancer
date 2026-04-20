@@ -18,12 +18,12 @@ export default async function handler(req, res) {
     const uploadData = await uploadRes.json();
 
     if (!uploadData.success) {
-      return res.status(500).json({ error: "Image upload failed" });
+      return res.status(500).json({ error: uploadData });
     }
 
     const imageUrl = uploadData.data.url;
 
-    // 2. Send to Replicate
+    // 2. Send to Replicate (FIXED VERSION)
     const response = await fetch("https://api.replicate.com/v1/predictions", {
       method: "POST",
       headers: {
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        version: "42fed1c497e8c6d0d9eae2c8cceba5d4aebbcad77f5d5b5a1d5c93d3536bc3a9",
+        version: "928360d7b3a0b5a0e64d5c7e7a87e0b0b8f58bd2d96ff475c933c7781b78b810",
         input: {
           image: imageUrl
         }
@@ -39,6 +39,14 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
+
+    // 🔴 IMPORTANT FIX (tumhara error yahi tha)
+    if (!data.urls || !data.urls.get) {
+      return res.status(500).json({
+        error: "Replicate API failed",
+        details: data
+      });
+    }
 
     // 3. Polling
     let result;
@@ -54,6 +62,7 @@ export default async function handler(req, res) {
       result = await check.json();
 
       if (result.status === "succeeded") break;
+
       if (result.status === "failed") {
         return res.status(500).json({ error: result });
       }
