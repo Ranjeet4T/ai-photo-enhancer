@@ -6,14 +6,16 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "No image received" });
     }
 
-    // ImgBB upload
+    // 1. Upload to ImgBB
     const base64Data = image.split(",")[1];
 
     const uploadRes = await fetch(
       `https://api.imgbb.com/1/upload?key=${process.env.IMGBB_API_KEY}`,
       {
         method: "POST",
-        body: new URLSearchParams({ image: base64Data })
+        body: new URLSearchParams({
+          image: base64Data
+        })
       }
     );
 
@@ -24,10 +26,11 @@ export default async function handler(req, res) {
     }
 
     const imageUrl = uploadData.data.url;
+    console.log("IMAGE URL:", imageUrl);
 
-    // ✅ GFPGAN सही API call
+    // 2. Send to Replicate (Stable Model)
     const start = await fetch(
-      "https://api.replicate.com/v1/models/tencentarc/gfpgan/predictions",
+      "https://api.replicate.com/v1/models/nightmareai/real-esrgan/predictions",
       {
         method: "POST",
         headers: {
@@ -36,25 +39,26 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           input: {
-            img: imageUrl,
+            image: imageUrl,
             scale: 2,
-            version: "v1.4"
+            face_enhance: true
           }
         })
       }
     );
 
     const startData = await start.json();
-    console.log(startData);
+    console.log("REPLICATE START:", startData);
 
-    if (!startData.urls?.get) {
+    if (!startData.urls || !startData.urls.get) {
       return res.status(500).json({ error: startData });
     }
 
+    // 🔥 3. Polling with RATE LIMIT SAFE DELAY
     let result;
 
     while (true) {
-      await new Promise(r => setTimeout(r, 2000));
+      await new Promise(r => setTimeout(r, 4000)); // ⬅️ IMPORTANT (delay increase)
 
       const check = await fetch(startData.urls.get, {
         headers: {
@@ -63,13 +67,16 @@ export default async function handler(req, res) {
       });
 
       result = await check.json();
+      console.log("STATUS:", result.status);
 
       if (result.status === "succeeded") break;
+
       if (result.status === "failed") {
         return res.status(500).json({ error: result });
       }
     }
 
+    // 4. Return output safely
     res.status(200).json({
       output: Array.isArray(result.output)
         ? result.output[0]
