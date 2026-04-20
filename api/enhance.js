@@ -9,7 +9,7 @@ export default async function handler(req, res) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        version: "db21e45c-5d3f-4f9f-9b77-9d5d3e7d6c91", // Real-ESRGAN model
+        version: "42fed1c497e8c6d0d9eae2c8cceba5d4aebbcad77f5d5b5a1d5c93d3536bc3a9", // working Real-ESRGAN
         input: {
           image: image
         }
@@ -18,25 +18,30 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    // Wait for result (simple polling)
-    let result = data;
-    while (result.status !== "succeeded" && result.status !== "failed") {
+    if (!data.urls) {
+      return res.status(500).json({ error: data });
+    }
+
+    // polling
+    let result;
+    while (true) {
       await new Promise(r => setTimeout(r, 2000));
 
-      const check = await fetch(result.urls.get, {
+      const check = await fetch(data.urls.get, {
         headers: {
           "Authorization": `Token ${process.env.REPLICATE_API_TOKEN}`
         }
       });
 
       result = await check.json();
+
+      if (result.status === "succeeded") break;
+      if (result.status === "failed") {
+        return res.status(500).json({ error: result });
+      }
     }
 
-    if (result.status === "succeeded") {
-      res.status(200).json({ output: result.output[0] });
-    } else {
-      res.status(500).json({ error: "Enhancement failed" });
-    }
+    res.status(200).json({ output: result.output[0] });
 
   } catch (err) {
     res.status(500).json({ error: err.message });
