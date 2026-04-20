@@ -1,16 +1,37 @@
 async function enhance() {
-  const file = document.getElementById("upload").files[0];
+  const fileInput = document.getElementById("upload");
+  const beforeImg = document.getElementById("before");
+  const afterImg = document.getElementById("after");
 
-  const formData = new FormData();
-  formData.append("image", file);
+  const file = fileInput.files[0];
+  if (!file) {
+    alert("Upload image first");
+    return;
+  }
 
-  document.getElementById("before").src = URL.createObjectURL(file);
+  beforeImg.src = URL.createObjectURL(file);
 
-  const res = await fetch("/api/enhance", {
-    method: "POST",
-    body: formData
-  });
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
 
-  const data = await res.json();
-  document.getElementById("after").src = data.output;
+  reader.onload = async () => {
+    const base64 = reader.result;
+
+    const res = await fetch("/api/enhance", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ image: base64 })
+    });
+
+    const data = await res.json();
+
+    if (data.output) {
+      afterImg.src = data.output;
+    } else {
+      alert("Error");
+      console.log(data);
+    }
+  };
 }
