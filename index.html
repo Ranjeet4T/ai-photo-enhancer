@@ -1,131 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>AI Photo Studio</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Studio</title>
 
 <style>
-:root{
-  --bg:#0b1220; --card:#111a2e; --muted:#8aa0c6; --primary:#38bdf8; --accent:#22c55e;
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif;}
+
+body{
+  background: linear-gradient(135deg,#020617,#0f172a,#1e293b);
+  color:white;
 }
-*{box-sizing:border-box}
-body{margin:0;font-family:system-ui,Arial;background:var(--bg);color:#fff}
-a{color:inherit;text-decoration:none}
-.container{max-width:1100px;margin:auto;padding:20px}
 
-/* Navbar */
-.nav{display:flex;justify-content:space-between;align-items:center;padding:15px 20px;background:#060b18;position:sticky;top:0}
-.logo{font-weight:bold;color:var(--primary);font-size:20px}
-.nav a{margin-left:15px;color:var(--muted)}
-.btn{background:var(--primary);padding:8px 14px;border-radius:6px;color:#000;font-weight:600}
+/* NAV */
+.nav{
+  display:flex;
+  justify-content:space-between;
+  padding:20px 40px;
+}
 
-/* Hero */
-.hero{display:flex;flex-wrap:wrap;align-items:center;gap:20px;padding:60px 20px}
-.hero-text{flex:1}
-.hero h1{font-size:42px;margin:0 0 10px}
-.hero p{color:var(--muted);margin-bottom:20px}
-.hero img{width:100%;max-width:400px;border-radius:12px}
+.logo{
+  font-size:22px;
+  font-weight:bold;
+  color:#38bdf8;
+}
 
-/* Cards */
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
-.card{background:var(--card);padding:20px;border-radius:12px}
+.nav a{
+  margin-left:20px;
+  color:#cbd5e1;
+}
 
-/* Pricing */
-.price{font-size:28px;margin:10px 0}
-.tag{color:var(--accent);font-size:14px}
+.btn{
+  background: linear-gradient(45deg,#38bdf8,#22c55e);
+  padding:8px 16px;
+  border-radius:20px;
+  color:black;
+  font-weight:bold;
+}
 
-/* Footer */
-footer{background:#060b18;margin-top:50px;padding:30px 20px;text-align:center;color:var(--muted)}
+/* HERO */
+.hero{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:80px 40px;
+}
+
+.hero h1{
+  font-size:48px;
+  background: linear-gradient(90deg,#38bdf8,#22c55e);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+.hero p{
+  color:#94a3b8;
+  margin:15px 0;
+}
+
+.hero img{
+  width:350px;
+  border-radius:20px;
+  box-shadow:0 0 30px rgba(56,189,248,0.5);
+}
+
+/* FEATURES */
+.section{
+  padding:40px;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
+}
+
+.card{
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  padding:20px;
+  border-radius:15px;
+  text-align:center;
+  transition:0.3s;
+}
+
+.card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 0 20px rgba(56,189,248,0.3);
+}
+
+/* PRICING */
+.price-card{
+  background: linear-gradient(145deg,#1e293b,#0f172a);
+  padding:25px;
+  border-radius:20px;
+  text-align:center;
+  transition:0.3s;
+}
+
+.price-card:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 25px rgba(34,197,94,0.3);
+}
+
+.price{
+  font-size:32px;
+  margin:10px 0;
+  color:#22c55e;
+}
+
+/* FOOTER */
+footer{
+  text-align:center;
+  padding:30px;
+  color:#94a3b8;
+}
 </style>
+
 </head>
 
 <body>
 
-<!-- NAVBAR -->
+<!-- NAV -->
 <div class="nav">
-  <div class="logo">AI Studio</div>
+  <div class="logo">⚡ AI Studio</div>
   <div>
-    <a href="#features">Features</a>
-    <a href="#pricing">Pricing</a>
+    <a href="#">Features</a>
+    <a href="#">Pricing</a>
     <a href="login.html">Login</a>
     <a href="signup.html" class="btn">Sign Up</a>
   </div>
 </div>
 
 <!-- HERO -->
-<div class="container hero">
-  <div class="hero-text">
+<div class="hero">
+  <div>
     <h1>Enhance Photos in 5 Seconds ⚡</h1>
-    <p>AI-powered photo enhancer, old photo restore, background change & more.</p>
+    <p>AI-powered enhance, restore & edit photos instantly.</p>
     <a href="dashboard.html" class="btn">Start Free</a>
   </div>
-  <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e" />
+
+  <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e">
 </div>
 
 <!-- FEATURES -->
-<div class="container" id="features">
+<div class="section">
   <h2>✨ Features</h2>
-  <div class="grid">
-    <div class="card">📸 Photo Enhance (HD)</div>
-    <div class="card">🧓 Old Photo Restore</div>
-    <div class="card">🎨 Background Change</div>
-    <div class="card">💄 Face Enhance</div>
+  <div class="cards">
+    <div class="card">📸 HD Enhance</div>
+    <div class="card">🧓 Restore Old</div>
+    <div class="card">🎨 Change BG</div>
+    <div class="card">💄 Face Fix</div>
   </div>
 </div>
 
 <!-- PRICING -->
-<div class="container" id="pricing">
+<div class="section">
   <h2>💰 Pricing</h2>
-  <div class="grid">
 
-    <div class="card">
+  <div class="cards">
+
+    <div class="price-card">
       <h3>Free</h3>
-      <p class="tag">Trial</p>
       <div class="price">₹0</div>
-      <p>2 images free</p>
-      <a href="signup.html" class="btn">Start</a>
+      <p>2 Images Free</p>
+      <button class="btn">Start</button>
     </div>
 
-    <div class="card">
+    <div class="price-card">
       <h3>Credits</h3>
-      <p class="tag">Pay as you use</p>
       <div class="price">₹49</div>
       <p>30 Images</p>
-      <button class="btn" onclick="buyCredits()">Buy</button>
+      <button class="btn">Buy</button>
     </div>
 
-    <div class="card">
-      <h3>Pro Monthly</h3>
-      <p class="tag">Best Value</p>
+    <div class="price-card">
+      <h3>Pro</h3>
       <div class="price">₹199/mo</div>
-      <p>Unlimited (Fair Use)</p>
-      <button class="btn" onclick="buyPlan()">Subscribe</button>
+      <p>Unlimited</p>
+      <button class="btn">Subscribe</button>
     </div>
 
   </div>
 </div>
 
-<!-- CTA -->
-<div class="container" style="text-align:center;margin-top:40px">
-  <h2>Ready to Enhance Your Photos?</h2>
-  <a href="signup.html" class="btn">Create Free Account</a>
-</div>
-
 <!-- FOOTER -->
 <footer>
-  <p>© 2026 AI Photo Studio. All rights reserved.</p>
-  <p>Contact: support@aistudio.com</p>
+  © 2026 AI Studio | All Rights Reserved
 </footer>
-
-<script>
-function buyCredits(){
-  alert("Payment integration next step (Razorpay)");
-}
-function buyPlan(){
-  alert("Subscription setup next step");
-}
-</script>
 
 </body>
 </html>
