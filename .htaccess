@@ -1,0 +1,28 @@
+# Security headers
+Header set X-Frame-Options "DENY"
+Header set X-Content-Type-Options "nosniff"
+Header set X-XSS-Protection "1; mode=block"
+
+# Prevent directory listing
+Options -Indexes
+
+# Block access to sensitive files
+<FilesMatch "^(config\.php|\.htaccess|\.htpasswd|\.ini|\.log|\.sqlite|\.db)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Rate limiting via Apache (optional)
+<IfModule mod_ratelimit.c>
+    SetOutputFilter RATE_LIMIT
+    SetEnv rate-limit 50
+</IfModule>
+
+# Force HTTPS (if you have SSL)
+# RewriteEngine On
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# Custom error pages
+ErrorDocument 403 "Access Denied"
+ErrorDocument 404 "Page Not Found"
